@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chip clicker</title>
+    <style>
+        body{
+            background-color: darkblue;
+        }
+        #chipGET{
+            background-color: forestgreen;
+            border-radius: 10%;
+        }
+        #upgrades{
+            background-color: cadetblue;
+        }
+        .upgrades{
+            float: right;
+            width: 25%;
+        }
+        .buttonUpg{
+            zoom: 90%;
+        }
+        #naslov{
+            border-radius: 10%;         
+            zoom: 120%;
+            width: 20%;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <center>
+    <div style="background-color: rgb(187, 255, 0);" id="naslov">
+        <p style="color: rgb(87, 87, 87);zoom: 230%;font-family:cursive;text-align: center;">Chip Clicker</p>
+    </div>
+    <button type="button" onClick="onClick(clickingpower)" id="chipGET">
+        <img src="https://cdn-icons.flaticon.com/png/128/630/premium/630413.png?token=exp=1654368348~hmac=2507d932be9bd9139ec366fffe7fe743" class="click">
+    </button>
+    <p style="color: rgb(0, 255, 34); zoom: 200%;font-family: fantasy;" id="clicks">Chips: <span id="clicks">0</span></p>
+    <p style="color:rgb(41, 248, 0) ; zoom: 200%;">-------------</p>
+    <span id="clickspersecond" style="color: rgb(43, 255, 0); zoom: 230%; font-family: fantasy;">0</span><p style="color: rgb(78, 255, 8); zoom: 230%; font-family: fantasy;">chips per second</p>
+    <div class="upgrades">
+        <button style="background-color: blueviolet; zoom: 90%;" onClick="buyCursor()" class="buttonUpg">
+            <p>cursor (<span id="cursorcost">15</span>) -- <span id="cursors">0</span></p>
+        </button>
+        <button style="background-color: rgb(217, 255, 0); zoom: 90%;" onClick="buyGrandma()" class="buttonUpg">
+            <p>programer (<span id="grandmacost">100</span>) -- <span id="grandmas">0</span></p>
+        </button>
+    </div>
+    <button onClick="savegame();" style="zoom: 120%; background-color: rgb(255, 251, 0);">Save game</button><tr>
+    <button onClick="resetgame();" style="background-color: darkorange; zoom: 120%;">Reset game</button>
+    </tr>
+    </center>
+    <script>
+        console.log('DONT CHEAT')
+    var clickingpower = 1;
+    var clicks = 0
+
+    function resetgame() {       
+        if (confirm("Are you sure you want reset game?")) {
+            var gamesave = {};
+            localStorage.setItem("gamesave", JSON.stringify(gamesave));
+            location.reload();
+        }
+    }
+
+    function onClick(amount) {
+        clicks += amount;
+        document.getElementById("clicks").innerHTML = clicks;
+    };
+    var cursorcost = 15;
+    var cursors = 0;
+    var grandmacost = 100;
+    var grandmas = 0;
+
+    function updateclickspersecond() {
+        clickspersecond = cursors + grandmas * 5;
+        document.getElementById("clickspersecond").innerHTML = clickspersecond;
+    }
+
+    function savegame() {
+        var gamesave = {
+            clicks: clicks,
+            clickingpower: clickingpower,
+            cursorcost: cursorcost,
+            cursors: cursors,
+            grandmacost: grandmacost,
+            grandmas: grandmas
+        };
+        localStorage.setItem("gamesave", JSON.stringify(gamesave));
+    }
+
+    function loadgame() {
+        var savedGame = JSON.parse(localStorage.getItem("gamesave"));
+        if (typeof savedGame.clicks !== "undefined") clicks = savedGame.clicks;
+        if (typeof savedGame.clickingpower !== "undefined") clickingpower = savedGame.clickingpower;
+        if (typeof savedGame.cursorcost !== "undefined") cursorcost = savedGame.cursorcost;
+        if (typeof savedGame.cursors !== "undefined") cursors = savedGame.cursors;
+        if (typeof savedGame.grandmacost !== "undefined") grandmacost = savedGame.grandmacost;
+        if (typeof savedGame.grandmas !== "undefined") grandmas = savedGame.grandmas;
+    }
+
+    function buyCursor() {
+        if (clicks >= cursorcost) {
+            clicks = clicks - cursorcost;
+            cursors = cursors + 1;
+            cursorcost = Math.round(cursorcost * 1.15);
+            document.getElementById("clicks").innerHTML = clicks;
+            document.getElementById("cursorcost").innerHTML = cursorcost;
+            document.getElementById("cursors").innerHTML = cursors;
+            updateclickspersecond();
+        }
+    }
+    function buyGrandma() {
+        if (clicks >= grandmacost) {
+            clicks = clicks - grandmacost;
+            grandmas = grandmas + 1;
+            grandmacost = Math.round(grandmacost * 1.16);
+            document.getElementById("clicks").innerHTML = clicks;
+            document.getElementById("grandmacost").innerHTML = grandmacost;
+            document.getElementById("grandmas").innerHTML = grandmas;
+            updateclickspersecond();
+        }
+    }
+
+    window.onload = function() {
+        loadgame();
+        updateclickspersecond();
+        document.getElementById("clicks").innerHTML = clicks;       
+        document.getElementById("cursorcost").innerHTML = cursorcost;
+        document.getElementById("cursors").innerHTML = cursors;
+        document.getElementById("grandmacost").innerHTML = grandmacost;
+        document.getElementById("grandmas").innerHTML = grandmas;
+    };
+
+    setInterval(function() {      
+        clicks = clicks + cursors;
+        clicks = clicks + grandmas * 5;
+        document.title = clicks + " chips - chip clicker";
+        document.getElementById("clicks").innerHTML = clicks;
+    }, 1000);  //1000ms = 1 second
+    setInterval(function() {
+        savegame();
+    }, 20000);
+
+    </script>
+    
+</body>
+</html>
